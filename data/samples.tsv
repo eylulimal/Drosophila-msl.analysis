@@ -1,0 +1,7 @@
+sample_id	condition	replicate	gsm_accession	geo_sample_title	sra_experiment	run_accessions
+control_rep1	control	1	GSM410195	Drosophila-S2-RNAseq1	SRX016201	SRR034820;SRR034819
+control_rep2	control	2	GSM410196	Drosophila-S2-RNAseq2	SRX016202	SRR034821;SRR034822
+msl2_rep1	msl2	1	GSM410197	Drosophila-S2-msl2RNAi-RNAseq1	SRX016203	SRR034823;SRR034824
+msl2_rep2	msl2	2	GSM410198	Drosophila-S2-msl2RNAi-RNAseq2	SRX016204	SRR034826;SRR034825
+mof_rep1	mof	1	GSM410199	Drosophila-S2-mofRNAi-RNAseq1	SRX016205	SRR034827;SRR034828
+mof_rep2	mof	2	GSM410200	Drosophila-S2-mofRNAi-RNAseq2	SRX016206	SRR034830;SRR034829

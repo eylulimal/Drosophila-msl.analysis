@@ -1,0 +1,154 @@
+---
+title: "drosophilamslrnaseqanalysis"
+author: "Eylul"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+library(SummarizedExperiment)
+library(tidyverse)
+```
+
+You can add options to executable code like this
+
+```{r}
+counts_df <- read.delim("data/counts.tsv", row.names = 1, header = TRUE)
+tpms_df <- read.delim("data/tpms.tsv", row.names = 1, header = TRUE)
+genes_df <- read.delim("data/genes.tsv", row.names = 1, header = TRUE)
+samples_df <- read.delim("data/samples.tsv", header = TRUE)
+
+rownames(samples_df) <- samples_df$sample_id
+
+genes_df <- genes_df[rownames(counts_df), ]
+samples_df <- samples_df[colnames(counts_df), ]
+
+stopifnot(all(rownames(counts_df) == rownames(tpms_df)))
+stopifnot(all(rownames(counts_df) == rownames(genes_df)))
+stopifnot(all(colnames(counts_df) == rownames(samples_df)))
+
+cat("All ID matches successfully vaidated!\n")
+```
+
+```{r}
+library(SummarizedExperiment)
+
+se <- SummarizedExperiment(
+  assays = list(
+    counts = as.matrix(counts_df),
+    tpms = as.matrix(tpms_df)
+  ),
+  rowData = DataFrame(genes_df),
+  colData = DataFrame(samples_df)
+)
+
+print(se)
+```
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("DESeq2")
+```
+
+```{r}
+library(DESeq2)
+
+dds <- DESeqDataSetFromMatrix(
+  countData = as.matrix(counts_df),
+  colData = samples_df,
+  design = ~ condition
+)
+
+dds <- DESeq(dds)
+
+res <- results(dds)
+print(res)
+```
+
+```{r}
+res_df <- as.data.frame(res)
+res_df <- res_df[order(res_df$padj), ]
+
+sig_genes <- subset(res_df, padj < 0.05)
+
+head(sig_genes)
+
+cat("Total number of significamt genes:", nrow(sig_genes), "\n")
+```
+
+¥
+
+```{r}
+vsd <- vst(dds, blind = FALSE)
+
+plotPCA(vsd, intgroup = c("condition"))
+```
+
+```{r}
+if (!requireNamespace("pheatmap", quietly = TRUE))
+  install.packages("pheatmap")
+
+library(pheatmap)
+library(matrixStats)
+
+top50_genes <- head(order(rowVars(assay(vsd)), decreasing = TRUE), 50)
+mat <- assay(vsd)[top50_genes, ]
+
+annotation_col <- data.frame(condition = colData(vsd)$condition, row.names = colnames(vsd))
+
+pheatmap(mat,
+         cluster_rows = TRUE,
+         show_rownames = FALSE,
+         cluster_cols = TRUE,
+         annotation_col = annotation_col,
+         scale = "row",
+         main = "Top 50 Most Variable Genes Heatmap")
+```
+
+```{r}
+res_mof <- results(dds, contrast=c("condition", "mof", "control"))
+res_mof_df <- as.data.frame(res_mof)
+
+res_msl2_merged <- merge(as.data.frame(res), genes_df, by=0)
+res_mof_merged <- merge(res_mof_df, genes_df, by=0)
+
+head(res_mof_merged)
+```
+
+```{r}
+x_msl2_fc <- mean(res_msl2_merged$log2FoldChange[res_msl2_merged$chrom == "X"], na.rm = TRUE)
+x_mof_fc <- mean(res_mof_merged$log2FoldChange[res_mof_merged$chrom == "X"], na.rm = TRUE)
+
+
+cat("MSL2 RNAi - X Chromosome average log2FC:", x_msl2_fc, "\n")
+cat("MOF RNAi - X Chromosome average log2FC:", x_mof_fc, "\n")
+```
+
+```         
+```
+
+```{r}
+autosome_msl2 <- mean(res_msl2_merged$log2FoldChange[res_msl2_merged$chrom != "X"], na.rm = TRUE)
+autosome_mof <- mean(res_mof_merged$log2FoldChange[res_mof_merged$chrom != "X"], na.rm = TRUE)
+
+x_spec_msl2 <- x_msl2_fc - autosome_msl2
+x_spec_mof <- x_mof_fc - autosome_mof
+
+diff_genes <- x_spec_msl2 - x_spec_mof
+
+print(paste("MSL2:", x_spec_msl2))
+print(paste("MOF:", x_spec_mof))
+print(paste("Diff:", diff_genes))
+```
+
+The X-specific expression effect relative to autosomes is approximately -0.40 for MSL2 RNAi and -0.42 for MOF RNAi. Therefore, the difference between the two gene knockdowns is 0.024.
