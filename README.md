@@ -1,24 +1,29 @@
-Project Overview
-This project investigates the role of MSL2 and MOF in the dosage compensation mechanism of Drosophila malanogaster.
-By analyzing RNA-seq data from S2 cells, we evaluate the impact of these two gene knockdowns on X-chromosome gene 
-expression relative to the autosomes.
+Drosophila MSL RNA-seq Analysis
 
-Analysis Summary
-The study focuses on calculating the average log2 fold change of genes on the X chromosome compared to autosomes. Our
-findings demonstrate the cooperative role of MSL2 and MOF in regulating X-linked gene expression.
+This repository investigates the dosage compensation mechanism in  *Drosophila melanogaster*, focusing on the role of
+MSL2 and MOF proteins in regulating X-chromosome gene expression relative to autosomes.
 
-Key Results
-MSL2 RNAi effect: Approximately -0.40 (relative to autosomes).
-
-MOF RNAi effect: Approximately -0.42 (relative to autosomes).
-
-Difference: The difference between the two gene knockdowns is 0.024, indicating a comparable impact on dosage compensation.
-
-Repository Contents
-
-drosophila-msl-rnaseq-analysis.qmd: Main analysis report(Quarto document).
-
-data/: Contains the processed datasets (Summarized_experiment.rds) used for the analysis.
-
-01_build_summarized_experiment.R: Script for data preparation.
+ ## Project Structure
+ 
+ * "drosophila-msl-rnaseq-analysis.qmd": The main Quarto document containing the complete workflow, exploratory data
+ analysis, PCA, and differential expression analysis.
+ * "drosophila-msl-rnaseq-analysis.html": The rendered HTML report with all visualizations and results.
+ * "data/": Dependency lockfile ensuring full computational reproducibility.
+ 
+  ## Analysis Overview
+  
+  1. **Data Preprocessing:** Construction of a "SummarizedExperiment" object using gene expression counts, TPM matrices
+  and sample metadata.
+  2. **Principal Component Analysis (PCA):** Unsupervised dimensionality reduction to evaluate sample clustering and 
+  variance across axperimental conditions (control, mof, msl2).
+  3. **Dosage Compensation Evaluation:** Assessing the impact of MSL2 and MOF knockdowns on X-linked genes compared 
+  to autosomes.
+  
+   ## Reproducibility
+   
+   This project uses "renv" for dependency management. To restore the required R environment on your local machine,
+   open the project in RStudio and run:
+   
+   ```R
+   renv::restore()
    

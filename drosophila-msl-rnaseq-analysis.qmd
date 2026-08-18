@@ -14,6 +14,34 @@ Quarto enables you to weave together content and executable code into a finished
 When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
+if (file.exists("data/expression.csv")) file.remove("data/expression.csv")
+if (file.exists("data/metadata.csv")) file.remove("data/metadata.csv")
+
+counts_matrix <- as.matrix(read.table("data/counts.tsv", header=TRUE, row.names=1, sep="\t"))
+tpm_matrix <- as.matrix(read.table("data/tpms.tsv", header=TRUE, row.names=1, sep="\t"))
+genes_df <- read.table("data/genes.tsv", header=TRUE, row.names=1, sep="\t")
+samples_df <- read.table("data/samples.tsv", header=TRUE, row.names=1, sep="\t")
+
+common_genes <- intersect(rownames(counts_matrix), rownames(tpm_matrix))
+common_samples <- intersect(colnames(counts_matrix), colnames(tpm_matrix))
+
+counts_matrix <- counts_matrix[common_genes, common_samples]
+tpm_matrix <- tpm_matrix[common_genes, common_samples]
+
+
+library(SummarizedExperiment)
+
+se <- SummarizedExperiment(
+  assays = list(counts = counts_matrix, tpm = tpm_matrix)
+)
+
+rowData(se) <- genes_df[common_genes, , drop=FALSE]
+colData(se) <- DataFrame(samples_df[common_samples, , drop=FALSE])
+
+saveRDS(se, "data/processed/summarized_experiment.rds")
+```
+
+```{r}
 library(SummarizedExperiment)
 library(tidyverse)
 ```
