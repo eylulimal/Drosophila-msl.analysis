@@ -118,7 +118,13 @@ library(ggplot2)
 
 vsd <- vst(dds, blind = FALSE)
 
+png(filename = "analysis_plot.png", width = 800, height = 600, res = 100)
+
 plotPCA(vsd, intgroup = c("condition"))
+
+dev.off()
+
+knitr::include_graphics("analysis_plot.png")
 ```
 
 ```{r}
