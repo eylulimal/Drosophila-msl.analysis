@@ -1,30 +1,28 @@
 ---
-title: "drosophilamslrnaseqanalysis"
+title: "Invastigating X-Chromosome Dosage Compensation in Drosophila malanogaster via MSL2 and MOF Knockdowns"
 author: "Eylul"
 format: html
+toc: true
+toc-location: left
+code-fold: true
+code-summary: "Click to see the analysis code"
+embedded-resources: true
 editor: visual
-embed-resources: true
 execute: 
   eval: true
   echo: true
+  message: false
+  warning: false
 ---
-
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
 if (file.exists("data/expression.csv")) file.remove("data/expression.csv")
 if (file.exists("data/metadata.csv")) file.remove("data/metadata.csv")
 
-counts_matrix <- as.matrix(read.table("data/counts.tsv", header=TRUE, row.names=1, sep="\t"))
-tpm_matrix <- as.matrix(read.table("data/tpms.tsv", header=TRUE, row.names=1, sep="\t"))
-genes_df <- read.table("data/genes.tsv", header=TRUE, row.names=1, sep="\t")
-samples_df <- read.table("data/samples.tsv", header=TRUE, row.names=1, sep="\t")
+counts_matrix <- as.matrix(read.table("data/counts.tsv", header=TRUE, row.names=1, sep = "\t"))
+tpm_matrix <- as.matrix(read.table("data/tpms.tsv", header=TRUE, row.names=1, sep = "\t"))
+genes_df <- read.table("data/genes.tsv", header=TRUE, row.names=1, sep = "\t")
+samples_df <- read.table("data/samples.tsv", header=TRUE, row.names=1, sep = "\t")
 
 common_genes <- intersect(rownames(counts_matrix), rownames(tpm_matrix))
 common_samples <- intersect(colnames(counts_matrix), colnames(tpm_matrix))
@@ -49,8 +47,6 @@ saveRDS(se, "data/processed/summarized_experiment.rds")
 library(SummarizedExperiment)
 library(tidyverse)
 ```
-
-You can add options to executable code like this
 
 ```{r}
 counts_df <- read.delim("data/counts.tsv", row.names = 1, header = TRUE)
@@ -85,15 +81,13 @@ se <- SummarizedExperiment(
 print(se)
 ```
 
-```{r}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-
-BiocManager::install("DESeq2")
+```{}
 ```
 
 ```{r}
 library(DESeq2)
+
+samples_df$condition <- as.factor(samples_df$condition)
 
 dds <- DESeqDataSetFromMatrix(
   countData = as.matrix(counts_df),
@@ -117,8 +111,6 @@ head(sig_genes)
 
 cat("Total number of significamt genes:", nrow(sig_genes), "\n")
 ```
-
-¥
 
 ```{r}
 library(DESeq2)
@@ -184,6 +176,11 @@ diff_genes <- x_spec_msl2 - x_spec_mof
 print(paste("MSL2:", x_spec_msl2))
 print(paste("MOF:", x_spec_mof))
 print(paste("Diff:", diff_genes))
+```
+
+```{r}
+ #| echo: false
+ #| sessionInfo()
 ```
 
 The X-specific expression effect relative to autosomes is approximately -0.40 for MSL2 RNAi and -0.42 for MOF RNAi. Therefore, the difference between the two gene knockdowns is 0.024.
