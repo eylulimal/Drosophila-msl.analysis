@@ -1,0 +1,191 @@
+---
+title: "Invastigating X-Chromosome Dosage Compensation in Drosophila malanogaster via MSL2 and MOF Knockdowns"
+author: "Eylul"
+format: html
+toc: true
+toc-location: left
+code-fold: true
+code-summary: "Click to see the analysis code"
+embedded-resources: false
+editor: visual
+execute:
+  eval: true
+  echo: true
+  message: false
+  warning: false
+  freeze: false
+---
+
+```{r}
+if (file.exists("data/expression.csv")) file.remove("data/expression.csv")
+if (file.exists("data/metadata.csv")) file.remove("data/metadata.csv")
+
+counts_matrix <- as.matrix(read.table("data/counts.tsv", header=TRUE, row.names=1, sep = "\t"))
+tpm_matrix <- as.matrix(read.table("data/tpms.tsv", header=TRUE, row.names=1, sep = "\t"))
+genes_df <- read.table("data/genes.tsv", header=TRUE, row.names=1, sep = "\t")
+samples_df <- read.table("data/samples.tsv", header=TRUE, row.names=1, sep = "\t")
+
+common_genes <- intersect(rownames(counts_matrix), rownames(tpm_matrix))
+common_samples <- intersect(colnames(counts_matrix), colnames(tpm_matrix))
+
+counts_matrix <- counts_matrix[common_genes, common_samples]
+tpm_matrix <- tpm_matrix[common_genes, common_samples]
+
+
+library(SummarizedExperiment)
+
+se <- SummarizedExperiment(
+  assays = list(counts = counts_matrix, tpm = tpm_matrix)
+)
+
+rowData(se) <- genes_df[common_genes, , drop=FALSE]
+colData(se) <- DataFrame(samples_df[common_samples, , drop=FALSE])
+
+saveRDS(se, "data/processed/summarized_experiment.rds")
+```
+
+```{r}
+library(SummarizedExperiment)
+library(tidyverse)
+```
+
+```{r}
+counts_df <- read.delim("data/counts.tsv", row.names = 1, header = TRUE)
+tpms_df <- read.delim("data/tpms.tsv", row.names = 1, header = TRUE)
+genes_df <- read.delim("data/genes.tsv", row.names = 1, header = TRUE)
+samples_df <- read.delim("data/samples.tsv", header = TRUE)
+
+rownames(samples_df) <- samples_df$sample_id
+
+genes_df <- genes_df[rownames(counts_df), ]
+samples_df <- samples_df[colnames(counts_df), ]
+
+stopifnot(all(rownames(counts_df) == rownames(tpms_df)))
+stopifnot(all(rownames(counts_df) == rownames(genes_df)))
+stopifnot(all(colnames(counts_df) == rownames(samples_df)))
+
+cat("All ID matches successfully vaidated!\n")
+```
+
+```{r}
+library(SummarizedExperiment)
+
+se <- SummarizedExperiment(
+  assays = list(
+    counts = as.matrix(counts_df),
+    tpms = as.matrix(tpms_df)
+  ),
+  rowData = DataFrame(genes_df),
+  colData = DataFrame(samples_df)
+)
+
+print(se)
+```
+
+```{}
+```
+
+```{r}
+library(DESeq2)
+
+samples_df$condition <- as.factor(samples_df$condition)
+
+dds <- DESeqDataSetFromMatrix(
+  countData = as.matrix(counts_df),
+  colData = samples_df,
+  design = ~ condition
+)
+
+dds <- DESeq(dds)
+
+res <- results(dds)
+print(res)
+```
+
+```{r}
+res_df <- as.data.frame(res)
+res_df <- res_df[order(res_df$padj), ]
+
+sig_genes <- subset(res_df, padj < 0.05)
+
+head(sig_genes)
+
+cat("Total number of significamt genes:", nrow(sig_genes), "\n")
+```
+
+```{r}
+library(DESeq2)
+library(ggplot2)
+
+vsd <- vst(dds, blind = FALSE)
+
+plotPCA(vsd, intgroup = c("condition"))
+
+```
+
+```{r}
+if (!requireNamespace("pheatmap", quietly = TRUE))
+  install.packages("pheatmap")
+
+library(pheatmap)
+library(matrixStats)
+
+top50_genes <- head(order(rowVars(assay(vsd)), decreasing = TRUE), 50)
+mat <- assay(vsd)[top50_genes, ]
+
+annotation_col <- data.frame(condition = colData(vsd)$condition, row.names = colnames(vsd))
+
+
+
+pheatmap(mat,
+         cluster_rows = TRUE,
+         show_rownames = FALSE,
+         cluster_cols = TRUE,
+         annotation_col = annotation_col,
+         scale = "row",
+         main = "Top 50 Most Variable Genes Heatmap")
+
+```
+
+```{r}
+res_mof <- results(dds, contrast=c("condition", "mof", "control"))
+res_mof_df <- as.data.frame(res_mof)
+
+res_msl2_merged <- merge(as.data.frame(res), genes_df, by=0)
+res_mof_merged <- merge(res_mof_df, genes_df, by=0)
+
+head(res_mof_merged)
+```
+
+```{r}
+x_msl2_fc <- mean(res_msl2_merged$log2FoldChange[res_msl2_merged$chrom == "X"], na.rm = TRUE)
+x_mof_fc <- mean(res_mof_merged$log2FoldChange[res_mof_merged$chrom == "X"], na.rm = TRUE)
+
+
+cat("MSL2 RNAi - X Chromosome average log2FC:", x_msl2_fc, "\n")
+cat("MOF RNAi - X Chromosome average log2FC:", x_mof_fc, "\n")
+```
+
+```         
+```
+
+```{r}
+autosome_msl2 <- mean(res_msl2_merged$log2FoldChange[res_msl2_merged$chrom != "X"], na.rm = TRUE)
+autosome_mof <- mean(res_mof_merged$log2FoldChange[res_mof_merged$chrom != "X"], na.rm = TRUE)
+
+x_spec_msl2 <- x_msl2_fc - autosome_msl2
+x_spec_mof <- x_mof_fc - autosome_mof
+
+diff_genes <- x_spec_msl2 - x_spec_mof
+
+print(paste("MSL2:", x_spec_msl2))
+print(paste("MOF:", x_spec_mof))
+print(paste("Diff:", diff_genes))
+```
+
+```{r}
+ #| echo: false
+ #| sessionInfo()
+```
+
+The X-specific expression effect relative to autosomes is approximately -0.40 for MSL2 RNAi and -0.42 for MOF RNAi. Therefore, the difference between the two gene knockdowns is 0.024.
