@@ -3,6 +3,7 @@ title: "drosophilamslrnaseqanalysis"
 author: "Eylul"
 format: html
 editor: visual
+embed-resources: true
 ---
 
 ## Quarto
