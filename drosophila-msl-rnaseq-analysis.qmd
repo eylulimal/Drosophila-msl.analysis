@@ -8,11 +8,12 @@ code-fold: true
 code-summary: "Click to see the analysis code"
 embedded-resources: true
 editor: visual
-execute: 
+execute:
   eval: true
   echo: true
   message: false
   warning: false
+  freeze: false
 ---
 
 ```{r}
@@ -118,13 +119,8 @@ library(ggplot2)
 
 vsd <- vst(dds, blind = FALSE)
 
-png(filename = "analysis_plot.png", width = 800, height = 600, res = 100)
-
 plotPCA(vsd, intgroup = c("condition"))
 
-dev.off()
-
-knitr::include_graphics("analysis_plot.png")
 ```
 
 ```{r}
@@ -139,6 +135,8 @@ mat <- assay(vsd)[top50_genes, ]
 
 annotation_col <- data.frame(condition = colData(vsd)$condition, row.names = colnames(vsd))
 
+
+
 pheatmap(mat,
          cluster_rows = TRUE,
          show_rownames = FALSE,
@@ -146,6 +144,7 @@ pheatmap(mat,
          annotation_col = annotation_col,
          scale = "row",
          main = "Top 50 Most Variable Genes Heatmap")
+
 ```
 
 ```{r}

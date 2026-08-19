@@ -274,24 +274,12 @@ FBgn0030752 1.831663e-05</code></pre>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">vst</span>(dds, <span class="at">blind =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="at">filename =</span> <span class="st">"analysis_plot.png"</span>, <span class="at">width =</span> <span class="dv">800</span>, <span class="at">height =</span> <span class="dv">600</span>, <span class="at">res =</span> <span class="dv">100</span>)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(vsd, <span class="at">intgroup =</span> <span class="fu">c</span>(<span class="st">"condition"</span>))</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>quartz_off_screen 
-                2 </code></pre>
-</div>
-<details class="code-fold">
-<summary>Click to see the analysis code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">"analysis_plot.png"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(vsd, <span class="at">intgroup =</span> <span class="fu">c</span>(<span class="st">"condition"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="analysis_plot.png" class="img-fluid figure-img"></p>
+<p><img src="drosophila-msl-rnaseq-analysis_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -299,24 +287,26 @@ FBgn0030752 1.831663e-05</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Click to see the analysis code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"pheatmap"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"pheatmap"</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(matrixStats)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>top50_genes <span class="ot">&lt;-</span> <span class="fu">head</span>(<span class="fu">order</span>(<span class="fu">rowVars</span>(<span class="fu">assay</span>(vsd)), <span class="at">decreasing =</span> <span class="cn">TRUE</span>), <span class="dv">50</span>)</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd)[top50_genes, ]</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>annotation_col <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">condition =</span> <span class="fu">colData</span>(vsd)<span class="sc">$</span>condition, <span class="at">row.names =</span> <span class="fu">colnames</span>(vsd))</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(mat,</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_rows =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">show_rownames =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_cols =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">annotation_col =</span> annotation_col,</span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">scale =</span> <span class="st">"row"</span>,</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">main =</span> <span class="st">"Top 50 Most Variable Genes Heatmap"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"pheatmap"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"pheatmap"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(matrixStats)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>top50_genes <span class="ot">&lt;-</span> <span class="fu">head</span>(<span class="fu">order</span>(<span class="fu">rowVars</span>(<span class="fu">assay</span>(vsd)), <span class="at">decreasing =</span> <span class="cn">TRUE</span>), <span class="dv">50</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">assay</span>(vsd)[top50_genes, ]</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>annotation_col <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">condition =</span> <span class="fu">colData</span>(vsd)<span class="sc">$</span>condition, <span class="at">row.names =</span> <span class="fu">colnames</span>(vsd))</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(mat,</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_rows =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">show_rownames =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_cols =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">annotation_col =</span> annotation_col,</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>         <span class="at">scale =</span> <span class="st">"row"</span>,</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">main =</span> <span class="st">"Top 50 Most Variable Genes Heatmap"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -329,13 +319,13 @@ FBgn0030752 1.831663e-05</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Click to see the analysis code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>res_mof <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">c</span>(<span class="st">"condition"</span>, <span class="st">"mof"</span>, <span class="st">"control"</span>))</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>res_mof_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(res_mof)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>res_msl2_merged <span class="ot">&lt;-</span> <span class="fu">merge</span>(<span class="fu">as.data.frame</span>(res), genes_df, <span class="at">by=</span><span class="dv">0</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>res_mof_merged <span class="ot">&lt;-</span> <span class="fu">merge</span>(res_mof_df, genes_df, <span class="at">by=</span><span class="dv">0</span>)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res_mof_merged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>res_mof <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">contrast=</span><span class="fu">c</span>(<span class="st">"condition"</span>, <span class="st">"mof"</span>, <span class="st">"control"</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>res_mof_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(res_mof)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>res_msl2_merged <span class="ot">&lt;-</span> <span class="fu">merge</span>(<span class="fu">as.data.frame</span>(res), genes_df, <span class="at">by=</span><span class="dv">0</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>res_mof_merged <span class="ot">&lt;-</span> <span class="fu">merge</span>(res_mof_df, genes_df, <span class="at">by=</span><span class="dv">0</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res_mof_merged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    Row.names     baseMean log2FoldChange     lfcSE       stat    pvalue
@@ -357,18 +347,18 @@ FBgn0030752 1.831663e-05</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Click to see the analysis code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>x_msl2_fc <span class="ot">&lt;-</span> <span class="fu">mean</span>(res_msl2_merged<span class="sc">$</span>log2FoldChange[res_msl2_merged<span class="sc">$</span>chrom <span class="sc">==</span> <span class="st">"X"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>x_mof_fc <span class="ot">&lt;-</span> <span class="fu">mean</span>(res_mof_merged<span class="sc">$</span>log2FoldChange[res_mof_merged<span class="sc">$</span>chrom <span class="sc">==</span> <span class="st">"X"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"MSL2 RNAi - X Chromosome average log2FC:"</span>, x_msl2_fc, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>x_msl2_fc <span class="ot">&lt;-</span> <span class="fu">mean</span>(res_msl2_merged<span class="sc">$</span>log2FoldChange[res_msl2_merged<span class="sc">$</span>chrom <span class="sc">==</span> <span class="st">"X"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>x_mof_fc <span class="ot">&lt;-</span> <span class="fu">mean</span>(res_mof_merged<span class="sc">$</span>log2FoldChange[res_mof_merged<span class="sc">$</span>chrom <span class="sc">==</span> <span class="st">"X"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"MSL2 RNAi - X Chromosome average log2FC:"</span>, x_msl2_fc, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>MSL2 RNAi - X Chromosome average log2FC: -0.3991339 </code></pre>
 </div>
 <details class="code-fold">
 <summary>Click to see the analysis code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"MOF RNAi - X Chromosome average log2FC:"</span>, x_mof_fc, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"MOF RNAi - X Chromosome average log2FC:"</span>, x_mof_fc, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>MOF RNAi - X Chromosome average log2FC: -0.3841073 </code></pre>
@@ -378,29 +368,29 @@ FBgn0030752 1.831663e-05</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Click to see the analysis code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>autosome_msl2 <span class="ot">&lt;-</span> <span class="fu">mean</span>(res_msl2_merged<span class="sc">$</span>log2FoldChange[res_msl2_merged<span class="sc">$</span>chrom <span class="sc">!=</span> <span class="st">"X"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>autosome_mof <span class="ot">&lt;-</span> <span class="fu">mean</span>(res_mof_merged<span class="sc">$</span>log2FoldChange[res_mof_merged<span class="sc">$</span>chrom <span class="sc">!=</span> <span class="st">"X"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>x_spec_msl2 <span class="ot">&lt;-</span> x_msl2_fc <span class="sc">-</span> autosome_msl2</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>x_spec_mof <span class="ot">&lt;-</span> x_mof_fc <span class="sc">-</span> autosome_mof</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>diff_genes <span class="ot">&lt;-</span> x_spec_msl2 <span class="sc">-</span> x_spec_mof</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"MSL2:"</span>, x_spec_msl2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>autosome_msl2 <span class="ot">&lt;-</span> <span class="fu">mean</span>(res_msl2_merged<span class="sc">$</span>log2FoldChange[res_msl2_merged<span class="sc">$</span>chrom <span class="sc">!=</span> <span class="st">"X"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>autosome_mof <span class="ot">&lt;-</span> <span class="fu">mean</span>(res_mof_merged<span class="sc">$</span>log2FoldChange[res_mof_merged<span class="sc">$</span>chrom <span class="sc">!=</span> <span class="st">"X"</span>], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>x_spec_msl2 <span class="ot">&lt;-</span> x_msl2_fc <span class="sc">-</span> autosome_msl2</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>x_spec_mof <span class="ot">&lt;-</span> x_mof_fc <span class="sc">-</span> autosome_mof</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>diff_genes <span class="ot">&lt;-</span> x_spec_msl2 <span class="sc">-</span> x_spec_mof</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"MSL2:"</span>, x_spec_msl2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "MSL2: -0.396971453689346"</code></pre>
 </div>
 <details class="code-fold">
 <summary>Click to see the analysis code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"MOF:"</span>, x_spec_mof))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"MOF:"</span>, x_spec_mof))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "MOF: -0.421035497590539"</code></pre>
 </div>
 <details class="code-fold">
 <summary>Click to see the analysis code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Diff:"</span>, diff_genes))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Diff:"</span>, diff_genes))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Diff: 0.0240640439011922"</code></pre>
@@ -409,8 +399,8 @@ FBgn0030752 1.831663e-05</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Click to see the analysis code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a> <span class="co">#| echo: false</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a> <span class="co">#| sessionInfo()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a> <span class="co">#| echo: false</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a> <span class="co">#| sessionInfo()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>The X-specific expression effect relative to autosomes is approximately -0.40 for MSL2 RNAi and -0.42 for MOF RNAi. Therefore, the difference between the two gene knockdowns is 0.024.</p>
